@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-3.12.0.xsd">
+  <!-- Configure the database connection here -->
+  <jdbc>
+    <driver>com.mysql.cj.jdbc.Driver</driver>
+    <url>jdbc:mysql://localhost:3306/demo3_db</url>
+    <user>root</user>
+    <password>10113-Xavi</password>
+    <properties>
+      <property><key>user</key><value>root</value></property>
+      <property><key>password</key><value>10113-Xavi</value></property>
+    </properties>
+  </jdbc>
+
+  <generator>
+    <database>
+      <name>org.jooq.meta.mysql.MySQLDatabase</name>
+      <includes>.*</includes>
+      <excludes>
+           UNUSED_TABLE                # This table (unqualified name) should not be generated
+         | PREFIX_.*                   # Objects with a given prefix should not be generated
+         | SECRET_SCHEMA\.SECRET_TABLE # This table (qualified name) should not be generated
+         | SECRET_ROUTINE              # This routine (unqualified name) ...
+      </excludes>
+      <inputSchema>demo3_db</inputSchema>
+      <forcedTypes>
+	    <forcedType>
+	      <userType>java.lang.Boolean</userType>
+	      <converter>com.example.webapi.infrastructure.jooq.converter.BooleanConverter</converter>
+	      <includeExpression>.*</includeExpression>
+	    </forcedType>
+	  </forcedTypes>
+    </database>
+
+    <generate>
+    </generate>
+
+    <target>
+      <packageName>com.example.webapi.infrastructure.jooq</packageName>
+      <directory>/Users/J10113/git/security-jwt-spring2-handmade/jooqgen/src</directory>
+    </target>
+  </generator>
+</configuration>
