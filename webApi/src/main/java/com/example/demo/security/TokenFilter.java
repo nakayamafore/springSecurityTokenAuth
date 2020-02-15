@@ -45,6 +45,7 @@ public class TokenFilter extends GenericFilterBean {
   public void doFilter(final ServletRequest request,
       final ServletResponse response, final FilterChain filterChain)
       throws IOException, ServletException {
+    log.info("TokenFilter");
     // リクエストからトークンを取り出す
     final String token = resolveToken(request);
     if (token == null) {

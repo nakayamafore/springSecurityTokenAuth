@@ -1,16 +1,14 @@
 package com.example.demo.security;
 
-import java.util.Optional;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Userエンティティ
  */
-public class UserDetailsServiceImpl implements UserDetailsService {
+@Slf4j
+public class UserDetailsServiceImpl {
 
   private final UserRepository userRepository;
 
@@ -18,13 +16,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     this.userRepository = userRepository;
   }
 
-  @Override
-  public UserDetails loadUserByUsername(final String email) {
+  public LoginUser loadUserByUsername(final String email) {
+    log.info("UserDetailsServiceImpl.loadUserByUsername");
     // emailでデータベースからユーザーエンティティを検索する
-    final Optional<User> userOpt = userRepository.findByEmail(email);
     return userRepository.findByEmail(email).map(LoginUser::new)
         .orElseThrow(
             () -> new UsernameNotFoundException("user not found"));
   }
-
 }

@@ -27,7 +27,7 @@ public class LoginUser
    */
   public LoginUser(final User user) {
     super(user.getName(), user.getPassword(),
-        determineRoles(user.getAdmin()));
+        determineRoles(user.getAdminFlag()));
     this.user = user;
   }
 

@@ -22,6 +22,7 @@ public class WebApiAccessDeniedHandler
   public void handle(final HttpServletRequest request,
       final HttpServletResponse response,
       final AccessDeniedException exception) throws IOException {
+    log.info("--WebApiAccessDeniedHandler");
     if (response.isCommitted()) {
       log.info("Response has already been committed.");
       return;

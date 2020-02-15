@@ -8,16 +8,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 import com.example.demo.repository.UserRepository;
 
@@ -26,52 +24,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private UserRepository userRepository;
+  @Autowired
+  CustomAuthenticationProvider authenticationProvider;
+
   @Value("${security.secret-key:secret}")
   private String secretKey = "secret";
 
   @Override
   protected void configure(final HttpSecurity http) throws Exception {
-    // @formatter:off
-        http
-            // AUTHORIZE
-            .authorizeRequests()
-                .mvcMatchers("/hello/**")
-                    .permitAll()
-                .mvcMatchers("/user/**")
-                    .hasRole("USER")
-                .mvcMatchers("/admin/**")
-                    .hasRole("ADMIN")
-                .anyRequest()
-                    .authenticated()
-            .and()
-            // EXCEPTION
-            .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint())
-                .accessDeniedHandler(accessDeniedHandler())
-            .and()
-            // LOGIN
-            .formLogin()
-                .loginProcessingUrl("/login").permitAll()
-                    .usernameParameter("email")
-                    .passwordParameter("pass")
-                .successHandler(authenticationSuccessHandler())
-                .failureHandler(authenticationFailureHandler())
-            .and()
-            // LOGOUT
-            .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessHandler(logoutSuccessHandler())
-            .and()
-            // CSRF
-            .csrf()
-                .disable()
-            // AUTHORIZE
-            .addFilterBefore(tokenFilter(), UsernamePasswordAuthenticationFilter.class)
-            // SESSION
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            ;
-        // @formatter:on
+
+    http
+        // AUTHORIZE
+        .authorizeRequests().mvcMatchers("/hello/**").permitAll()
+        .mvcMatchers("/user/**").hasRole("USER")
+        .mvcMatchers("/admin/**").hasRole("ADMIN").anyRequest()
+        .authenticated().and()
+        // EXCEPTION
+        .exceptionHandling()
+        .authenticationEntryPoint(authenticationEntryPoint())
+        .accessDeniedHandler(accessDeniedHandler()).and()
+        // LOGIN
+        .addFilter(loginFilter())
+        // LOGOUT
+        .logout().logoutUrl("/logout")
+        .logoutSuccessHandler(logoutSuccessHandler()).and()
+        // CSRF
+        .csrf().disable()
+        // AUTHORIZE
+        .addFilterBefore(tokenFilter(),
+            CustomAuthenticationFilter.class)
+        // SESSION
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
   }
 
   /**
@@ -83,13 +67,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   public void configureGlobal(final AuthenticationManagerBuilder auth)
       throws Exception {
-    auth.eraseCredentials(true)
-        .userDetailsService(userDetailsServiceImpl())
-        .passwordEncoder(passwordEncoder());
+    auth.authenticationProvider(authenticationProvider);
   }
 
   @Bean("UserDetailsServiceImpl")
-  UserDetailsService userDetailsServiceImpl() {
+  UserDetailsServiceImpl userDetailsServiceImpl() {
     return new UserDetailsServiceImpl(userRepository);
   }
 
@@ -104,11 +86,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   /**
+   * ログインフィルタ
+   * 
+   * @return ログインフィルタ
+   * @throws Exception 認証マネージャの取得に失敗した場合
+   */
+  private UsernamePasswordAuthenticationFilter loginFilter()
+      throws Exception {
+    // ログイン処理のカスタマイズ
+    final CustomAuthenticationFilter loginfilter =
+        new CustomAuthenticationFilter();
+    loginfilter.setRequiresAuthenticationRequestMatcher(
+        new AntPathRequestMatcher("/login", "POST"));
+    loginfilter.setAuthenticationManager(authenticationManagerBean());
+    return loginfilter;
+  }
+
+  /**
    * アクセストークンの認証filter
    * 
    * @return トークン認証フィルタ
    */
-  GenericFilterBean tokenFilter() {
+  private GenericFilterBean tokenFilter() {
     return new TokenFilter(userRepository, secretKey);
   }
 
@@ -117,7 +116,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
    * 
    * @return
    */
-  AuthenticationEntryPoint authenticationEntryPoint() {
+  private AuthenticationEntryPoint authenticationEntryPoint() {
     return new WebApiAuthenticationEntryPoint();
   }
 
@@ -126,26 +125,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
    * 
    * @return
    */
-  AccessDeniedHandler accessDeniedHandler() {
+  private AccessDeniedHandler accessDeniedHandler() {
     return new WebApiAccessDeniedHandler();
-  }
-
-  /**
-   * 認証成功時の処理を登録
-   * 
-   * @return
-   */
-  AuthenticationSuccessHandler authenticationSuccessHandler() {
-    return new WebApiAuthenticationSuccessHandler(secretKey);
-  }
-
-  /**
-   * 認証失敗時の処理を登録
-   * 
-   * @return
-   */
-  AuthenticationFailureHandler authenticationFailureHandler() {
-    return new WebApiAuthenticationFailureHandler();
   }
 
   /**
@@ -153,7 +134,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
    * 
    * @return
    */
-  LogoutSuccessHandler logoutSuccessHandler() {
+  private LogoutSuccessHandler logoutSuccessHandler() {
     return new HttpStatusReturningLogoutSuccessHandler();
   }
 

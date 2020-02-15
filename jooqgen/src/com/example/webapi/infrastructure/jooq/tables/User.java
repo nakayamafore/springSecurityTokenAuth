@@ -4,6 +4,7 @@
 package com.example.webapi.infrastructure.jooq.tables;
 
 
+import com.example.webapi.converter.BooleanConverter;
 import com.example.webapi.infrastructure.jooq.Demo3Db;
 import com.example.webapi.infrastructure.jooq.Indexes;
 import com.example.webapi.infrastructure.jooq.Keys;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-    private static final long serialVersionUID = -1052350080;
+    private static final long serialVersionUID = 745260010;
 
     /**
      * The reference instance of <code>demo3_db.user</code>
@@ -80,7 +81,7 @@ public class User extends TableImpl<UserRecord> {
     /**
      * The column <code>demo3_db.user.admin_flag</code>.
      */
-    public final TableField<UserRecord, Byte> ADMIN_FLAG = createField(DSL.name("admin_flag"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+    public final TableField<UserRecord, Boolean> ADMIN_FLAG = createField(DSL.name("admin_flag"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "", new BooleanConverter());
 
     /**
      * Create a <code>demo3_db.user</code> table reference
@@ -171,7 +172,7 @@ public class User extends TableImpl<UserRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, String, String, String, Byte> fieldsRow() {
+    public Row5<Long, String, String, String, Boolean> fieldsRow() {
         return (Row5) super.fieldsRow();
     }
 }

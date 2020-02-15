@@ -37,6 +37,8 @@ public class WebApiAuthenticationSuccessHandler
   public void onAuthenticationSuccess(
       final HttpServletRequest request,
       final HttpServletResponse response, final Authentication auth) {
+    log.info(
+        "--WebApiAuthenticationSuccessHandler.onAuthenticationSuccess");
     if (response.isCommitted()) {
       log.info("Response has already been committed.");
       return;

@@ -26,6 +26,7 @@ public class WebApiAuthenticationEntryPoint
   public void commence(final HttpServletRequest request,
       final HttpServletResponse response,
       final AuthenticationException exception) throws IOException {
+    log.info("--WebApiAuthenticationEntryPoint");
     if (response.isCommitted()) {
       log.info("Response has already been committed.");
       return;
