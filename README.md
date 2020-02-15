@@ -1,6 +1,6 @@
 # SpringSecurityTokenAuth
  
-SpringSecurityを使って認証処理を実装
+SpringSecurityを使って認証処理を実装(勉強用)
  
 # Features
  
