@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/Users/J10113/Downloads/jOOQ-3.12.3/jOOQ-lib/jooq-3.12.3.jar"/>
+	<classpathentry kind="lib" path="/Users/J10113/Downloads/jOOQ-3.12.3/jOOQ-lib/jooq-3.12.3.jar" sourcepath="/Users/J10113/Downloads/jOOQ-3.12.3/jOOQ-src/jooq-3.12.3-sources.jar"/>
 	<classpathentry kind="lib" path="/Users/J10113/Downloads/jOOQ-3.12.3/jOOQ-lib/jooq-codegen-3.12.3.jar"/>
 	<classpathentry kind="lib" path="/Users/J10113/Downloads/jOOQ-3.12.3/jOOQ-lib/jooq-meta-3.12.3.jar"/>
 	<classpathentry kind="lib" path="/Users/J10113/Downloads/jOOQ-3.12.3/jOOQ-lib/reactive-streams-1.0.2.jar"/>

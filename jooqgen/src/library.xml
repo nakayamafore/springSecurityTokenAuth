@@ -26,8 +26,8 @@
       <forcedTypes>
 	    <forcedType>
 	      <userType>java.lang.Boolean</userType>
-	      <converter>com.example.webapi.infrastructure.jooq.converter.BooleanConverter</converter>
-	      <includeExpression>.*</includeExpression>
+	      <converter>com.example.webapi.converter.BooleanConverter</converter>
+	      <includeExpression>admin_flag</includeExpression>
 	    </forcedType>
 	  </forcedTypes>
     </database>
