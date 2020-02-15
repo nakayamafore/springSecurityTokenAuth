@@ -4,7 +4,8 @@ SpringSecurityを使って認証処理を実装
  
 # Features
  
-JSONでログイン処理を実施するため、AuthenticationProviderをカスタマイズしている
+JSONでログイン処理を実施するため、AuthenticationProviderをカスタマイズしている。
+MySQLへのアクセスはJOOQで行なっている
  
 # Note
  
